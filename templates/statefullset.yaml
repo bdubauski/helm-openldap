@@ -124,7 +124,8 @@ spec:
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-      affinity: 
+{{- if .Values.podAntiAffinity.enabled }}
+      affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - topologyKey: kubernetes.io/hostname
@@ -132,12 +133,13 @@ spec:
               matchLabels:
                 app: {{ template "openldap.fullname" . }}
                 release: {{ .Release.Name }}
+{{- end }}
     {{- with .Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- if .Values.image.pullSecret }}
-      imagePullSecrets: 
+      imagePullSecrets:
         - name: {{ .Values.image.pullSecret }}
     {{- end }}
       volumes:
